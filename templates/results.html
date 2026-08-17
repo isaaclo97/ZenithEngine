@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t('ui.page_title_results') }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header class="hero">
+        <div class="lang-switch">
+            <a href="/?lang=es" class="{{ 'active' if lang == 'es' else '' }}">ES</a>
+            <a href="/?lang=en" class="{{ 'active' if lang == 'en' else '' }}">EN</a>
+        </div>
+        <h1>Zenith Engine</h1>
+        <p class="subtitle">{{ t('ui.results_subtitle_prefix') }} <strong>{{ filename }}</strong></p>
+    </header>
+
+    <main class="container">
+
+        <section class="summary">
+            <div class="summary-total">
+                {% if summary.total == 1 %}
+                    {{ t('ui.summary_singular', n=summary.total) }}
+                {% else %}
+                    {{ t('ui.summary_plural', n=summary.total) }}
+                {% endif %}
+            </div>
+            <div class="summary-badges">
+                {% if summary.critical > 0 %}
+                    <span class="badge critical">{{ summary.critical }} CRITICAL</span>
+                {% endif %}
+                {% if summary.high > 0 %}
+                    <span class="badge high">{{ summary.high }} HIGH</span>
+                {% endif %}
+                {% if summary.medium > 0 %}
+                    <span class="badge medium">{{ summary.medium }} MEDIUM</span>
+                {% endif %}
+                {% if summary.low > 0 %}
+                    <span class="badge low">{{ summary.low }} LOW</span>
+                {% endif %}
+            </div>
+            <a href="/?lang={{ lang }}" class="btn-back">{{ t('ui.back_button') }}</a>
+        </section>
+
+        {% if alerts %}
+            <section class="alerts-list">
+                {% for alert in alerts %}
+                    <div class="alert-card {{ alert.severity | lower }}">
+                        <div class="alert-header">
+                            <span class="alert-severity {{ alert.severity | lower }}">
+                                {{ alert.severity }}
+                            </span>
+                            <span class="alert-category">{{ alert.category }}</span>
+                            <span class="alert-line">{{ t('ui.line_label') }} {{ alert.line }}</span>
+                        </div>
+                        <h3 class="alert-rule">{{ alert.rule }}</h3>
+                        <p class="alert-description">{{ alert.description }}</p>
+                        <div class="alert-suggestion">
+                            <strong>{{ t('ui.suggestion_label') }}</strong> {{ alert.suggestion }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </section>
+        {% else %}
+            <section class="no-alerts">
+                <p>{{ t('ui.no_vulnerabilities') }}</p>
+            </section>
+        {% endif %}
+
+    </main>
+
+</body>
+</html>

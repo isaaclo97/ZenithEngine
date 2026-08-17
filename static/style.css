@@ -1,0 +1,322 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    min-height: 100vh;
+}
+
+.hero {
+    position: relative;
+    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+    border-bottom: 1px solid #30363d;
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.lang-switch {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    display: flex;
+    gap: 4px;
+}
+
+.lang-switch a {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #8b949e;
+    text-decoration: none;
+    border: 1px solid #30363d;
+}
+
+.lang-switch a:hover {
+    color: #e6edf3;
+    border-color: #58a6ff;
+}
+
+.lang-switch a.active {
+    color: #58a6ff;
+    border-color: #58a6ff;
+    background: rgba(88, 166, 255, 0.1);
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #58a6ff;
+    margin-bottom: 8px;
+}
+
+.hero .subtitle {
+    font-size: 1rem;
+    color: #8b949e;
+}
+
+.container {
+    max-width: 860px;
+    margin: 48px auto;
+    padding: 0 24px;
+}
+
+.description {
+    margin-bottom: 48px;
+}
+
+.description h2 {
+    font-size: 1.25rem;
+    color: #e6edf3;
+    margin-bottom: 12px;
+}
+
+.description p {
+    color: #8b949e;
+    line-height: 1.7;
+    margin-bottom: 8px;
+}
+
+.description code {
+    background: #161b22;
+    border: 1px solid #30363d;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #58a6ff;
+}
+
+.drop-zone {
+    border: 2px dashed #30363d;
+    border-radius: 12px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #161b22;
+    margin-bottom: 16px;
+}
+
+.drop-zone:hover,
+.drop-zone.drag-over {
+    border-color: #58a6ff;
+    background: #1c2128;
+}
+
+.drop-zone svg {
+    color: #8b949e;
+    margin-bottom: 16px;
+}
+
+.drop-zone p {
+    color: #8b949e;
+    margin-bottom: 12px;
+}
+
+.btn-upload {
+    display: inline-block;
+    padding: 8px 20px;
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: #e6edf3;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    margin-bottom: 12px;
+}
+
+.btn-upload:hover {
+    background: #30363d;
+    border-color: #8b949e;
+}
+
+.file-hint {
+    font-size: 0.8rem;
+    color: #484f58;
+}
+
+.file-selected {
+    font-size: 0.9rem;
+    color: #58a6ff;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+.btn-analyze {
+    width: 100%;
+    padding: 12px;
+    background: #238636;
+    border: 1px solid #2ea043;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-analyze:hover:not(:disabled) {
+    background: #2ea043;
+}
+
+.btn-analyze:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.error-msg {
+    background: #2d1b1b;
+    border: 1px solid #f85149;
+    border-radius: 6px;
+    padding: 12px 16px;
+    color: #f85149;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+}
+
+.summary {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.summary-total {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e6edf3;
+    margin-bottom: 16px;
+}
+
+.summary-badges {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge.critical { background: #2d1b1b; color: #f85149; border: 1px solid #f85149; }
+.badge.high     { background: #2d1f0e; color: #f0883e; border: 1px solid #f0883e; }
+.badge.medium   { background: #2d2a0e; color: #d29922; border: 1px solid #d29922; }
+.badge.low      { background: #0e1f2d; color: #58a6ff; border: 1px solid #58a6ff; }
+
+.btn-back {
+    display: inline-block;
+    padding: 8px 20px;
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: #e6edf3;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn-back:hover {
+    background: #30363d;
+}
+
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.alert-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid #30363d;
+}
+
+.alert-card.critical { border-left-color: #f85149; }
+.alert-card.high     { border-left-color: #f0883e; }
+.alert-card.medium   { border-left-color: #d29922; }
+.alert-card.low      { border-left-color: #58a6ff; }
+
+.alert-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.alert-severity {
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.alert-severity.critical { background: #2d1b1b; color: #f85149; }
+.alert-severity.high     { background: #2d1f0e; color: #f0883e; }
+.alert-severity.medium   { background: #2d2a0e; color: #d29922; }
+.alert-severity.low      { background: #0e1f2d; color: #58a6ff; }
+
+.alert-category {
+    font-size: 0.8rem;
+    color: #8b949e;
+    background: #21262d;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.alert-line {
+    font-size: 0.8rem;
+    color: #8b949e;
+    margin-left: auto;
+}
+
+.alert-rule {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #e6edf3;
+    margin-bottom: 8px;
+}
+
+.alert-description {
+    font-size: 0.9rem;
+    color: #8b949e;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.alert-suggestion {
+    font-size: 0.85rem;
+    color: #8b949e;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 14px;
+    line-height: 1.6;
+}
+
+.alert-suggestion strong {
+    color: #58a6ff;
+}
+
+.no-alerts {
+    text-align: center;
+    padding: 48px;
+    color: #3fb950;
+    font-size: 1.1rem;
+}

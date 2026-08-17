@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t('ui.page_title_index') }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header class="hero">
+        <div class="lang-switch">
+            <a href="?lang=es" class="{{ 'active' if lang == 'es' else '' }}">ES</a>
+            <a href="?lang=en" class="{{ 'active' if lang == 'en' else '' }}">EN</a>
+        </div>
+        <h1>Zenith Engine</h1>
+        <p class="subtitle">{{ t('ui.subtitle_index') }}</p>
+    </header>
+
+    <main class="container">
+        <section class="description">
+            <h2>{{ t('ui.about_heading') }}</h2>
+            <p>{{ t('ui.about_p1') | safe }}</p>
+            <p>{{ t('ui.about_p2') }}</p>
+        </section>
+
+        <section class="upload-section">
+            {% if error %}
+                <div class="error-msg">{{ error }}</div>
+            {% endif %}
+
+            <form id="upload-form" action="/analyze?lang={{ lang }}" method="POST" enctype="multipart/form-data">
+                <div class="drop-zone" id="drop-zone">
+                    <div class="drop-zone-content">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p>{{ t('ui.drop_hint') }}</p>
+                        <label for="file" class="btn-upload">{{ t('ui.select_file') }}</label>
+                        <input type="file" id="file" name="file" accept=".yml,.yaml" hidden>
+                        <p class="file-hint">{{ t('ui.file_hint') }}</p>
+                        <p class="file-selected" id="file-selected"></p>
+                    </div>
+                </div>
+                <button type="submit" class="btn-analyze" id="btn-analyze" disabled>
+                    {{ t('ui.analyze_button') }}
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file');
+        const fileSelected = document.getElementById('file-selected');
+        const btnAnalizar = document.getElementById('btn-analyze');
+        const invalidExtensionMessage = {{ t('ui.invalid_extension_error') | tojson }};
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                fileSelected.textContent = fileInput.files[0].name;
+                btnAnalizar.disabled = false;
+            }
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.name.endsWith('.yml') || file.name.endsWith('.yaml')) {
+                    fileInput.files = files;
+                    fileSelected.textContent = file.name;
+                    btnAnalizar.disabled = false;
+                } else {
+                    alert(invalidExtensionMessage);
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

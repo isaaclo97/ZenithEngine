@@ -1,0 +1,7 @@
+attacker.com
+malicious.com
+pastebin.com
+ngrok.io
+requestbin.com
+webhook.site
+burpcollaborator.net

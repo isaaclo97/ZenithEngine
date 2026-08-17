@@ -1,0 +1,602 @@
+{
+  "_source": "Local snapshot of the public GitHub Security Advisories API (https://api.github.com/advisories?ecosystem=actions), used as a fallback when check_known_vulnerable_component_1025 can't reach the live API (no network, rate-limit, timeout). Generated on 2026-08-17. The rule tries to refresh this data live once per process; if that fails, it falls back to this file.",
+  "_generated_at": "2026-08-17",
+  "gouef/githubtoplanguages": [
+    {
+      "id": "GHSA-c3xh-98xp-6qhf",
+      "reference": "https://github.com/advisories/GHSA-c3xh-98xp-6qhf",
+      "ranges": [
+        "<1.1.4"
+      ],
+      "summary": "githubtoplanguages: Command Injection via Issue Title in Discord Notification Workflow"
+    }
+  ],
+  "anthropics/claude-code-action": [
+    {
+      "id": "CVE-2026-47751",
+      "reference": "https://github.com/advisories/GHSA-8q5r-mmjf-575q",
+      "ranges": [
+        "<1.0.74"
+      ],
+      "summary": "Claude Code Action: Malicious MCP Server Configuration in PRs Enables Remote Code Execution and Secret Exfiltration"
+    }
+  ],
+  "shivammathur/setup-php": [
+    {
+      "id": "GHSA-5wxr-w449-57cm",
+      "reference": "https://github.com/advisories/GHSA-5wxr-w449-57cm",
+      "ranges": [
+        "<2.37.1"
+      ],
+      "summary": "Setup PHP: GitHub tokens configured by setup-php may be exposed through pinned affected Composer versions"
+    },
+    {
+      "id": "CVE-2026-46420",
+      "reference": "https://github.com/advisories/GHSA-pqwm-q9pv-ph8r",
+      "ranges": [
+        ">=2.25.0,<2.37.1"
+      ],
+      "summary": "Setup PHP: Command Injection in Repository-Derived PHP Version Resolution"
+    }
+  ],
+  "google-github-actions/run-gemini-cli": [
+    {
+      "id": "GHSA-wpqr-6v78-jr5g",
+      "reference": "https://github.com/advisories/GHSA-wpqr-6v78-jr5g",
+      "ranges": [
+        "<0.1.22"
+      ],
+      "summary": "Gemini CLI: Remote Code Execution via workspace trust and tool allowlisting bypasses"
+    }
+  ],
+  "Tiryoh/actions-mkdocs": [
+    {
+      "id": "GHSA-6p2j-742g-835f",
+      "reference": "https://github.com/advisories/GHSA-6p2j-742g-835f",
+      "ranges": [
+        "<=0.24.0"
+      ],
+      "summary": "actions-mkdocs: Command Injection via issue title in internal GitHub Actions workflow"
+    }
+  ],
+  "njzjz/wenxian": [
+    {
+      "id": "CVE-2026-34243",
+      "reference": "https://github.com/advisories/GHSA-r4fj-r33x-8v88",
+      "ranges": [
+        "<=0.3.1"
+      ],
+      "summary": "wenxian: Command Injection in GitHub Actions Workflow via `issue_comment.body` "
+    }
+  ],
+  "aquasecurity/trivy-action": [
+    {
+      "id": "CVE-2026-33634",
+      "reference": "https://github.com/advisories/GHSA-69fq-xp46-6x23",
+      "ranges": [
+        "<0.35.0"
+      ],
+      "summary": "Trivy ecosystem supply chain was briefly compromised"
+    },
+    {
+      "id": "CVE-2026-26189",
+      "reference": "https://github.com/advisories/GHSA-9p44-j4g5-cfx5",
+      "ranges": [
+        ">=0.31.0,<0.34.0"
+      ],
+      "summary": "Trivy Action has a script injection via sourced env file in composite action"
+    }
+  ],
+  "aquasecurity/setup-trivy": [
+    {
+      "id": "CVE-2026-33634",
+      "reference": "https://github.com/advisories/GHSA-69fq-xp46-6x23",
+      "ranges": [
+        "<0.2.6"
+      ],
+      "summary": "Trivy ecosystem supply chain was briefly compromised"
+    }
+  ],
+  "SHAdd0WTAka/Zen-Ai-Pentest": [
+    {
+      "id": "GHSA-f67f-hcr6-94mf",
+      "reference": "https://github.com/advisories/GHSA-f67f-hcr6-94mf",
+      "ranges": [
+        "<=3.0.0"
+      ],
+      "summary": "Zen-AI-Pentest has Shell Injection via untrusted issue title in ZenClaw Discord Integration workflow"
+    }
+  ],
+  "step-security/harden-runner": [
+    {
+      "id": "CVE-2026-32947",
+      "reference": "https://github.com/advisories/GHSA-46g3-37rh-v698",
+      "ranges": [
+        "<=2.15.1"
+      ],
+      "summary": "Egress Policy Bypass via DNS over HTTPS (DoH) in Harden-Runner (Community Tier)"
+    },
+    {
+      "id": "CVE-2026-32946",
+      "reference": "https://github.com/advisories/GHSA-g699-3x6g-wm3g",
+      "ranges": [
+        "<=2.15.1"
+      ],
+      "summary": "Egress Policy Bypass via DNS over TCP in Harden-Runner (Community Tier)"
+    },
+    {
+      "id": "CVE-2026-25598",
+      "reference": "https://github.com/advisories/GHSA-cpmj-h4f6-r6pq",
+      "ranges": [
+        "<2.14.2"
+      ],
+      "summary": "Harden-Runner: Bypassing Logging of Outbound Connections Using sendto, sendmsg, and sendmmsg in Harden-Runner (Community Tier)"
+    },
+    {
+      "id": "CVE-2025-32955",
+      "reference": "https://github.com/advisories/GHSA-mxr3-8whj-j74r",
+      "ranges": [
+        ">=0.12.0,<2.12.0"
+      ],
+      "summary": "Harden-Runner allows evasion of 'disable-sudo' policy"
+    },
+    {
+      "id": "CVE-2024-52587",
+      "reference": "https://github.com/advisories/GHSA-g85v-wf27-67xc",
+      "ranges": [
+        "<2.10.2"
+      ],
+      "summary": "Harden-Runner has a command injection weaknesses in `setup.ts` and `arc-runner.ts`"
+    }
+  ],
+  "xygeni/xygeni-action": [
+    {
+      "id": "CVE-2026-31976",
+      "reference": "https://github.com/advisories/GHSA-f8q5-h5qh-33mh",
+      "ranges": [
+        ">=5,<6.4.0"
+      ],
+      "summary": "xygeni-action v5 tag poisoned with C2 backdoor"
+    }
+  ],
+  "psf/black": [
+    {
+      "id": "CVE-2026-31900",
+      "reference": "https://github.com/advisories/GHSA-v53h-f6m7-xcgm",
+      "ranges": [
+        "<26.3.0"
+      ],
+      "summary": "Black's vulnerable version parsing leads to RCE in GitHub Action"
+    }
+  ],
+  "super-linter/super-linter": [
+    {
+      "id": "CVE-2026-25761",
+      "reference": "https://github.com/advisories/GHSA-r79c-pqj3-577x",
+      "ranges": [
+        ">=6.0.0,<8.3.1"
+      ],
+      "summary": "Super-linter is vulnerable to command injection via crafted filenames in Super-linter Action"
+    }
+  ],
+  "super-linter/super-linter/slim": [
+    {
+      "id": "CVE-2026-25761",
+      "reference": "https://github.com/advisories/GHSA-r79c-pqj3-577x",
+      "ranges": [
+        ">=6.0.0,<8.3.1"
+      ],
+      "summary": "Super-linter is vulnerable to command injection via crafted filenames in Super-linter Action"
+    }
+  ],
+  "j178/prek-action": [
+    {
+      "id": "GHSA-pwf7-47c3-mfhx",
+      "reference": "https://github.com/advisories/GHSA-pwf7-47c3-mfhx",
+      "ranges": [
+        "<=1.0.5"
+      ],
+      "summary": "j178/prek-action vulnerable to arbitrary code injection in composite action"
+    }
+  ],
+  "SonarSource/sonarqube-scan-action": [
+    {
+      "id": "CVE-2025-59844",
+      "reference": "https://github.com/advisories/GHSA-5xq9-5g24-4g6f",
+      "ranges": [
+        ">=4.0.0,<6.0.0"
+      ],
+      "summary": "Argument injection vulnerability in SonarQube Scan Action"
+    },
+    {
+      "id": "CVE-2025-58178",
+      "reference": "https://github.com/advisories/GHSA-f79p-9c5r-xg88",
+      "ranges": [
+        ">=4.0.0,<=5.3.0"
+      ],
+      "summary": "Command Injection via sonarqube-scan-action GitHub Action"
+    }
+  ],
+  "pypa/gh-action-pypi-publish": [
+    {
+      "id": "GHSA-vxmw-7h4f-hqxh",
+      "reference": "https://github.com/advisories/GHSA-vxmw-7h4f-hqxh",
+      "ranges": [
+        "<1.13.0"
+      ],
+      "summary": "PyPI publish GitHub Action vulnerable to injectable expression expansions in action steps"
+    }
+  ],
+  "lycheeverse/lychee-action": [
+    {
+      "id": "CVE-2024-48908",
+      "reference": "https://github.com/advisories/GHSA-65rg-554r-9j5x",
+      "ranges": [
+        "<2.0.2"
+      ],
+      "summary": "lychee link checking action affected by arbitrary code injection in composite action"
+    }
+  ],
+  "m00nl1ght-dev/steam-workshop-deploy": [
+    {
+      "id": "GHSA-x6gv-2rvh-qmp6",
+      "reference": "https://github.com/advisories/GHSA-x6gv-2rvh-qmp6",
+      "ranges": [
+        "<4"
+      ],
+      "summary": "m00nl1ght-dev/steam-workshop-deploy: Exposure of Version-Control Repository to an Unauthorized Control Sphere and Insufficiently Protected Credentials"
+    }
+  ],
+  "BoldestDungeon/steam-workshop-deploy": [
+    {
+      "id": "GHSA-x6gv-2rvh-qmp6",
+      "reference": "https://github.com/advisories/GHSA-x6gv-2rvh-qmp6",
+      "ranges": [
+        "<2.0.0"
+      ],
+      "summary": "m00nl1ght-dev/steam-workshop-deploy: Exposure of Version-Control Repository to an Unauthorized Control Sphere and Insufficiently Protected Credentials"
+    }
+  ],
+  "tj-actions/branch-names": [
+    {
+      "id": "CVE-2025-54416",
+      "reference": "https://github.com/advisories/GHSA-gq52-6phf-x2r6",
+      "ranges": [
+        "<=8.2.1"
+      ],
+      "summary": "tj-actions/branch-names has a Command Injection Vulnerability"
+    },
+    {
+      "id": "CVE-2023-49291",
+      "reference": "https://github.com/advisories/GHSA-8v8w-v8xg-79rf",
+      "ranges": [
+        "<7.0.7"
+      ],
+      "summary": "tj-actions/branch-names's Improper Sanitization of Branch Name Leads to Arbitrary Code Injection"
+    }
+  ],
+  "RageAgainstThePixel/setup-steamcmd": [
+    {
+      "id": "GHSA-c5qx-p38x-qf5w",
+      "reference": "https://github.com/advisories/GHSA-c5qx-p38x-qf5w",
+      "ranges": [
+        "<1.3.0"
+      ],
+      "summary": "RageAgainstThePixel/setup-steamcmd leaked authentication token in job output logs"
+    }
+  ],
+  "buildalon/setup-steamcmd": [
+    {
+      "id": "GHSA-mj96-mh85-r574",
+      "reference": "https://github.com/advisories/GHSA-mj96-mh85-r574",
+      "ranges": [
+        "<1.1.0"
+      ],
+      "summary": "buildalon/setup-steamcmd leaked authentication token in job output logs"
+    }
+  ],
+  "broadinstitute/cromwell": [
+    {
+      "id": "GHSA-phf6-hm3h-x8qp",
+      "reference": "https://github.com/advisories/GHSA-phf6-hm3h-x8qp",
+      "ranges": [
+        ">=87,<90"
+      ],
+      "summary": "Cromwell GitHub Actions Secrets exfiltration via `Issue_comment`"
+    }
+  ],
+  "bullfrogsec/bullfrog": [
+    {
+      "id": "CVE-2025-47775",
+      "reference": "https://github.com/advisories/GHSA-m32f-fjw2-37v3",
+      "ranges": [
+        "<0.8.4"
+      ],
+      "summary": "Bullfrog's DNS over TCP bypasses domain filtering"
+    }
+  ],
+  "OZI-Project/publish": [
+    {
+      "id": "CVE-2025-47271",
+      "reference": "https://github.com/advisories/GHSA-2487-9f55-2vg9",
+      "ranges": [
+        ">=1.13.2,<1.13.6"
+      ],
+      "summary": "OZI-Project/ozi-publish Code Injection vulnerability"
+    }
+  ],
+  "canonical/get-workflow-version-action": [
+    {
+      "id": "CVE-2025-31479",
+      "reference": "https://github.com/advisories/GHSA-26wh-cc3r-w6pj",
+      "ranges": [
+        "<1.0.1"
+      ],
+      "summary": "canonical/get-workflow-version-action can leak a partial GITHUB_TOKEN in exception output"
+    }
+  ],
+  "reviewdog/action-setup": [
+    {
+      "id": "CVE-2025-30154",
+      "reference": "https://github.com/advisories/GHSA-qmg3-hpqr-gqvc",
+      "ranges": [
+        "=1"
+      ],
+      "summary": "Multiple Reviewdog actions were compromised during a specific time period"
+    }
+  ],
+  "tj-actions/changed-files": [
+    {
+      "id": "CVE-2025-30066",
+      "reference": "https://github.com/advisories/GHSA-mrrh-fwg8-r2c3",
+      "ranges": [
+        "<=45.0.7"
+      ],
+      "summary": "tj-actions changed-files through 45.0.7 allows remote attackers to discover secrets by reading actions logs."
+    },
+    {
+      "id": "CVE-2023-51664",
+      "reference": "https://github.com/advisories/GHSA-mcph-m25j-8j63",
+      "ranges": [
+        "<41"
+      ],
+      "summary": "tj-actions/changed-files has Potential Actions command injection in output filenames (GHSL-2023-271)"
+    }
+  ],
+  "github/codeql-action": [
+    {
+      "id": "CVE-2025-24362",
+      "reference": "https://github.com/advisories/GHSA-vqf5-2xx6-9wfm",
+      "ranges": [
+        ">=3.26.11,<=3.28.2"
+      ],
+      "summary": "GitHub PAT written to debug artifacts"
+    },
+    {
+      "id": "CVE-2025-24362",
+      "reference": "https://github.com/advisories/GHSA-vqf5-2xx6-9wfm",
+      "ranges": [
+        ">=2.26.11,<3.0.0"
+      ],
+      "summary": "GitHub PAT written to debug artifacts"
+    }
+  ],
+  "dawidd6/action-download-artifact": [
+    {
+      "id": "GHSA-5xr6-xhww-33m4",
+      "reference": "https://github.com/advisories/GHSA-5xr6-xhww-33m4",
+      "ranges": [
+        "<6"
+      ],
+      "summary": "Artifact poisoning vulnerability in action-download-artifact v5 and earlier"
+    }
+  ],
+  "actions/download-artifact": [
+    {
+      "id": "GHSA-cxww-7g56-2vh6",
+      "reference": "https://github.com/advisories/GHSA-cxww-7g56-2vh6",
+      "ranges": [
+        ">=4.0.0,<4.1.3"
+      ],
+      "summary": "@actions/download-artifact has an Arbitrary File Write via artifact extraction"
+    }
+  ],
+  "ultralytics/actions": [
+    {
+      "id": "GHSA-7x29-qqmq-v6qc",
+      "reference": "https://github.com/advisories/GHSA-7x29-qqmq-v6qc",
+      "ranges": [
+        "<=0.0.2"
+      ],
+      "summary": "GitHub Actions Script Injection in `ultralytics/actions`"
+    }
+  ],
+  "fish-shop/syntax-check": [
+    {
+      "id": "CVE-2024-42482",
+      "reference": "https://github.com/advisories/GHSA-xj87-mqvh-88w2",
+      "ranges": [
+        "<1.6.12"
+      ],
+      "summary": "fish-shop/syntax-check Improper Neutralization of Delimiters"
+    }
+  ],
+  "rlespinasse/github-slug-action": [
+    {
+      "id": "GHSA-7f32-hm4h-w77q",
+      "reference": "https://github.com/advisories/GHSA-7f32-hm4h-w77q",
+      "ranges": [
+        "<=1.1.0"
+      ],
+      "summary": "github-slug-action use of `set-env` Runner commands which are processed via stdout"
+    },
+    {
+      "id": "GHSA-7f32-hm4h-w77q",
+      "reference": "https://github.com/advisories/GHSA-7f32-hm4h-w77q",
+      "ranges": [
+        ">=2.0.0,<=2.1.0"
+      ],
+      "summary": "github-slug-action use of `set-env` Runner commands which are processed via stdout"
+    },
+    {
+      "id": "CVE-2023-27581",
+      "reference": "https://github.com/advisories/GHSA-6q4m-7476-932w",
+      "ranges": [
+        ">=4.0.0,<4.4.1"
+      ],
+      "summary": "github-slug-action vulnerable to arbitrary code execution"
+    }
+  ],
+  "tj-actions/verify-changed-files": [
+    {
+      "id": "CVE-2023-52137",
+      "reference": "https://github.com/advisories/GHSA-ghm2-rq8q-wrhc",
+      "ranges": [
+        "<17"
+      ],
+      "summary": "Potential Actions command injection in output filenames (GHSL-2023-275)"
+    }
+  ],
+  "afichet/openexr-viewer": [
+    {
+      "id": "CVE-2023-50245",
+      "reference": "https://github.com/advisories/GHSA-99jg-r3f4-rpxj",
+      "ranges": [
+        "<0.6.1"
+      ],
+      "summary": "memory overflow vulnerability in OpenEXR-viewer"
+    }
+  ],
+  "https://github.com/pytorch/pytorch/.github/actions/filter-test-configs": [
+    {
+      "id": "GHSA-hw6r-g8gj-2987",
+      "reference": "https://github.com/advisories/GHSA-hw6r-g8gj-2987",
+      "ranges": [
+        "<2.0.1"
+      ],
+      "summary": "Actions expression injection in `filter-test-configs` (`GHSL-2023-181`)"
+    }
+  ],
+  "gradle/gradle-build-action": [
+    {
+      "id": "CVE-2023-30853",
+      "reference": "https://github.com/advisories/GHSA-h3qr-39j9-4r5v",
+      "ranges": [
+        "<2.4.2"
+      ],
+      "summary": "Data written to GitHub Actions Cache may expose secrets"
+    }
+  ],
+  "embano1/wip": [
+    {
+      "id": "CVE-2023-30623",
+      "reference": "https://github.com/advisories/GHSA-rg3q-prf8-qxmp",
+      "ranges": [
+        "<2"
+      ],
+      "summary": "Arbitrary command injection in embano1/wip "
+    }
+  ],
+  "Azure/setup-kubectl": [
+    {
+      "id": "CVE-2023-23939",
+      "reference": "https://github.com/advisories/GHSA-p756-rfxh-x63h",
+      "ranges": [
+        "<3"
+      ],
+      "summary": "Azure/setup-kubectl: Escalation of privilege vulnerability for v3 and lower"
+    }
+  ],
+  "actions/runner": [
+    {
+      "id": "CVE-2022-39321",
+      "reference": "https://github.com/advisories/GHSA-2c6m-6gqh-6qg3",
+      "ranges": [
+        ">=2.294.0,<2.296.1"
+      ],
+      "summary": "Docker Command Escaping in the GitHub Actions Runner"
+    },
+    {
+      "id": "CVE-2022-39321",
+      "reference": "https://github.com/advisories/GHSA-2c6m-6gqh-6qg3",
+      "ranges": [
+        ">=2.290.0,<2.293.1"
+      ],
+      "summary": "Docker Command Escaping in the GitHub Actions Runner"
+    },
+    {
+      "id": "CVE-2022-39321",
+      "reference": "https://github.com/advisories/GHSA-2c6m-6gqh-6qg3",
+      "ranges": [
+        ">=2.286.0,<2.289.4"
+      ],
+      "summary": "Docker Command Escaping in the GitHub Actions Runner"
+    },
+    {
+      "id": "CVE-2022-39321",
+      "reference": "https://github.com/advisories/GHSA-2c6m-6gqh-6qg3",
+      "ranges": [
+        ">=2.284.0,<2.285.2"
+      ],
+      "summary": "Docker Command Escaping in the GitHub Actions Runner"
+    },
+    {
+      "id": "CVE-2022-39321",
+      "reference": "https://github.com/advisories/GHSA-2c6m-6gqh-6qg3",
+      "ranges": [
+        "<2.283.4"
+      ],
+      "summary": "Docker Command Escaping in the GitHub Actions Runner"
+    }
+  ],
+  "kartverket/github-workflows": [
+    {
+      "id": "CVE-2022-39326",
+      "reference": "https://github.com/advisories/GHSA-f9qj-7gh3-mhj4",
+      "ranges": [
+        "<2.7.5"
+      ],
+      "summary": "run-terraform allows for RCE via terraform plan"
+    }
+  ],
+  "atlassian/gajira-create": [
+    {
+      "id": "CVE-2020-14188",
+      "reference": "https://github.com/advisories/GHSA-4xqx-pqpj-9fqw",
+      "ranges": [
+        "<2.0.1"
+      ],
+      "summary": "gajira-create GitHub action vulnerable to arbitrary code execution"
+    }
+  ],
+  "some-natalie/ghas-to-csv": [
+    {
+      "id": "CVE-2022-39217",
+      "reference": "https://github.com/advisories/GHSA-634p-93h9-92vh",
+      "ranges": [
+        "<1"
+      ],
+      "summary": "ghas-to-csv vulnerable to Improper Neutralization of Formula Elements in a CSV File"
+    }
+  ],
+  "check-spelling/check-spelling": [
+    {
+      "id": "CVE-2021-32724",
+      "reference": "https://github.com/advisories/GHSA-g86g-chm8-7r2p",
+      "ranges": [
+        "<0.0.19"
+      ],
+      "summary": "check-spelling workflow vulnerable to token leakage via symlink attack"
+    }
+  ],
+  "hashicorp/vault-action": [
+    {
+      "id": "CVE-2021-32074",
+      "reference": "https://github.com/advisories/GHSA-4mgv-m5cm-f9h7",
+      "ranges": [
+        "<2.2.0"
+      ],
+      "summary": "Vault GitHub Action did not correctly mask multi-line secrets in output"
+    }
+  ]
+}
