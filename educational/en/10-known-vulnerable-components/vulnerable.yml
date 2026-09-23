@@ -1,0 +1,20 @@
+name: Container security scan
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan the image with Trivy
+        uses: aquasecurity/trivy-action@v0.28.0   # R1025: version affected by CVE-2026-33634 and CVE-2026-26189
+        with:
+          image-ref: 'myorg/myimage:${{ github.sha }}'
+          format: 'table'

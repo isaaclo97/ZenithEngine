@@ -1,0 +1,32 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Configurar API key de Stripe
+        uses: some-org/stripe-config-action@a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e # v1.4.0
+        with:
+          api_key: ${{ secrets.STRIPE_API_KEY }}
+
+      - name: Deploy con token
+        env:
+          TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "Falta configurar el secreto DEPLOY_TOKEN"
+            exit 1
+          fi
+          echo "TOKEN configurado (longitud: ${#TOKEN})"
+          curl -H "Authorization: Bearer $TOKEN" https://deploy.internal/api/release

@@ -1,0 +1,30 @@
+# YOUR TURN (lesson 10): three actions in this workflow have a published
+# advisory for the exact version they use. Upgrade them to a version with no
+# known vulnerabilities.
+name: PR review
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: List changed files
+        id: changes
+        uses: tj-actions/changed-files@v45.0.7
+
+      - name: Download the build report
+        uses: actions/download-artifact@v4.1.2
+        with:
+          name: report
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2.0.1

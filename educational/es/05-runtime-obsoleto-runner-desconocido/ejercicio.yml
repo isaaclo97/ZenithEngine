@@ -1,0 +1,40 @@
+# TU TURNO (lección 05): este workflow lleva meses sin tocarse y ya no arranca.
+# Haz que vuelva a ejecutarse en runners que existan hoy, con acciones al día.
+name: Tests multiplataforma
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-lastest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Preparar Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Cachear dependencias
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Ejecutar los tests
+        run: pip install -r requirements.txt && pytest
+
+  macos:
+    runs-on: macos-10.15
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Ejecutar los tests
+        run: pip3 install -r requirements.txt && pytest

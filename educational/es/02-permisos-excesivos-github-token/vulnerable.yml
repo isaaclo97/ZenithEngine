@@ -1,0 +1,23 @@
+name: Auto label and comment
+
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    # R1003: sin bloque "permissions" -> hereda los permisos por defecto del repo (a menudo read/write)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Etiquetar automáticamente segun ficheros modificados
+        uses: some-org/pr-labeler-action@v1     # organización no verificada
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}   # R1011: acción de tercero con acceso al token, sin permisos explícitos que lo acoten
+
+      - name: Comentar en el PR
+        uses: some-org/pr-commenter-action@v2   # organización no verificada
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}  # R1011
+          message: "¡Gracias por tu contribución!"

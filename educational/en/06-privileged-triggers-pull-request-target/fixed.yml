@@ -1,0 +1,71 @@
+name: PR build and preview
+
+# Three jobs with different trust levels in the same file:
+# - "label-only": pull_request_target with NO checkout of the PR's code, only calls the API.
+# - "build-preview": plain pull_request (no _target), no access to secrets, safe to run fork code.
+# - "test-approved": pull_request_target that DOES run the PR's code, but only after a
+#   maintainer's review, pinned to the reviewed SHA and with no secrets available.
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  pull_request_target:
+    types: [opened, labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  label-only:
+    if: github.event_name == 'pull_request_target' && github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Label the PR (without touching the PR's code)
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['needs-review']
+            })
+
+  build-preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Normal checkout, no access to the base repo's secrets
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install dependencies and build preview
+        run: npm ci && npm run build
+
+  test-approved:
+    # Only the "labeled" event with "safe-to-test" triggers this job. A later
+    # push to the PR produces a "synchronize" event, which does NOT trigger
+    # it: the maintainer has to review and re-label the new commit.
+    if: >-
+      github.event_name == 'pull_request_target' &&
+      github.event.action == 'labeled' &&
+      github.event.label.name == 'safe-to-test'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the exact reviewed SHA, no TOCTOU pattern
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # head.sha is the PR's commit at the time of the "labeled" event, i.e.
+          # the one the maintainer reviewed. It closes the TOCTOU gap, but the
+          # code is still the PR author's: that's why R1001 keeps flagging it.
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false   # don't leave the GITHUB_TOKEN in .git/config
+          allow-unsafe-pr-checkout: true   # checkout v7+ blocks this by default: enabled knowingly, with the controls above
+
+      - name: Run the tests (no secrets in the environment)
+        run: npm test

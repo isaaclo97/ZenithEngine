@@ -1,0 +1,23 @@
+name: Container security scan
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Scan the image with Trivy
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0, released after the CVE-2026-33634 / CVE-2026-26189 patch
+        # Pinned by hash: R1025 can no longer look it up (see "Tension with lesson 01" in the README).
+        with:
+          image-ref: 'myorg/myimage:${{ github.sha }}'
+          format: 'table'

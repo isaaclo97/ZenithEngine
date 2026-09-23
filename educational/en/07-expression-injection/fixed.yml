@@ -1,0 +1,21 @@
+name: Greet PR author
+
+on:
+  pull_request:  # no _target: greeting needs no secrets or write token
+    types: [opened]
+
+permissions:
+  contents: read
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Greet using the PR title (safely)
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "Thanks for your PR: $PR_TITLE"
+          # The title arrives as the value of the PR_TITLE environment
+          # variable, never interpolated into the script text: no command
+          # expansion is possible even if the title contains shell metacharacters.

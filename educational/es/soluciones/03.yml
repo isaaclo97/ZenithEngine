@@ -1,0 +1,73 @@
+# Solución lección 03: harden-runner como primer step de cada job, en modo
+# block y con la lista mínima de destinos que cada job necesita de verdad.
+# (objects/release-assets.githubusercontent.com sirven las descargas de Node.js
+# de setup-node. En un proyecto real, confirma la lista con unas ejecuciones en audit.)
+name: Tests y publicación
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vigilar la red
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            objects.githubusercontent.com:443
+            release-assets.githubusercontent.com:443
+            registry.npmjs.org:443
+
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false   # workflow que publica: sin caché, para que nadie pueda envenenarla
+
+      - name: Ejecutar los tests
+        run: npm ci && npm test
+
+  publicar:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vigilar la red
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            objects.githubusercontent.com:443
+            release-assets.githubusercontent.com:443
+            registry.npmjs.org:443
+
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Preparar Node.js para publicar
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false   # workflow que publica: sin caché, para que nadie pueda envenenarla
+          registry-url: https://registry.npmjs.org
+
+      - name: Publicar en npm
+        run: npm ci && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

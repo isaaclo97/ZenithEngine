@@ -1,0 +1,24 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: ['**']
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # R1022_JOB: two ${{ }} expressions in the same if -> GitHub does NOT
+    # evaluate this as a condition, it treats it as a non-empty string -> ALWAYS true.
+    # This job runs on EVERY branch, not just main.
+    if: "${{ github.ref == 'refs/heads/main' }} && ${{ github.actor == 'trusted-bot' }}"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish release
+        # R1022_STEP: the condition doesn't end in "}}" -> also not
+        # evaluated as an expression -> this step also always runs.
+        if: "${{ vars.DEPLOY_ENABLED == 'true' }} == true"
+        run: ./scripts/publish-release.sh

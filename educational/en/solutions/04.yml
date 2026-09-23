@@ -1,0 +1,52 @@
+# Lesson 04 solution:
+# - "actions/checkuot" was a typo (or typosquatting): the real action is actions/checkout;
+# - linting the Dockerfile no longer depends on an unknown author's action: it
+#   runs the official hadolint image with a run step;
+# - the image is signed with cosign (keyless, using the workflow's OIDC identity).
+#   cosign is downloaded from its official release and its SHA-256 is checked first.
+name: Publish image
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write   # needed for cosign keyless signing
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Lint the Dockerfile
+        run: docker run --rm -i hadolint/hadolint:v2.12.0 hadolint - < Dockerfile
+
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          push: true
+          tags: ghcr.io/${{ github.repository }}:latest
+
+      - name: Sign the image
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+          IMAGE: ghcr.io/${{ github.repository }}
+        run: |
+          curl -sSfL -o cosign https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64
+          echo "8b24b946dd5809c6bd93de08033bcf6bc0ed7d336b7785787c080f574b89249b  cosign" | sha256sum -c -
+          chmod +x cosign
+          ./cosign sign --yes "${IMAGE}@${DIGEST}"

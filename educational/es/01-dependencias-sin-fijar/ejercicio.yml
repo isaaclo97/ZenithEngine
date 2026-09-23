@@ -1,0 +1,36 @@
+# TU TURNO (lección 01): este workflow publica la documentación del proyecto.
+# Haz que todo lo que ejecuta sea inmutable, sin quitar ningún step.
+name: Publicar documentación
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@main
+        with:
+          python-version: '3.12'
+
+      - name: Construir la web
+        run: pip install --require-hashes -r requirements-docs.txt && mkdocs build
+
+      - name: Revisar enlaces rotos
+        uses: lycheeverse/lychee-action@latest
+        with:
+          args: ./site
+
+      - name: Publicar en GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site

@@ -1,0 +1,26 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar API key de Stripe
+        uses: some-org/stripe-config-action@v1
+        with:
+          api_key: "sk_live_EXAMPLE-not-a-real-key"   # R1014: credencial hardcodeada en el yml
+
+      - name: Deploy con token
+        env:
+          TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          echo "Usando token: $TOKEN"                            # R1019: el secreto se imprime en el log
+          curl -H "Authorization: Bearer $TOKEN" https://deploy.internal/api/release

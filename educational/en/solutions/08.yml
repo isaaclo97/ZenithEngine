@@ -1,0 +1,39 @@
+# Lesson 08 solution:
+# - the registry password comes from a secret (and the one that was written in
+#   the file must be ROTATED: it's already in the git history);
+# - neither the token nor any piece of it is printed: the prefix cut with "cut"
+#   no longer matches the secret, so GitHub wouldn't mask it. We only check that
+#   it exists and how long it is.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to the registry
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          username: ci-bot
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Check deployment credentials
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          if [ -z "$DEPLOY_TOKEN" ]; then
+            echo "The DEPLOY_TOKEN secret is not configured"
+            exit 1
+          fi
+          echo "DEPLOY_TOKEN configured (length: ${#DEPLOY_TOKEN})"
+
+      - name: Deploy
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: ./scripts/deploy.sh --token "$DEPLOY_TOKEN"

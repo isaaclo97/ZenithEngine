@@ -1,0 +1,10 @@
+# Sandbox aislado y sin red para demostrar la ejecución real de un comando
+# inyectado vía expansión de expresiones de GitHub Actions.
+# El payload de demo.sh no requiere salida a Internet (usa un comando local
+# inofensivo en vez de contactar un host real), así que network_mode: none
+# no rompe la demostración y evita cualquier tráfico saliente accidental.
+services:
+  injection-demo:
+    build: .
+    network_mode: none
+    read_only: false

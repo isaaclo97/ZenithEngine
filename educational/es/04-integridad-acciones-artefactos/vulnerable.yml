@@ -1,0 +1,28 @@
+name: Build and publish Docker image
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Analizar Dockerfile con linter de terceros
+        uses: totally-random-dev/dockerfile-lint-action@v1   # R1007: organización no verificada
+
+      - name: Typo real de una acción popular
+        uses: actions/checkuot@v4                             # R1008: no existe (typosquatting de actions/checkout)
+
+      - name: Build y push de la imagen
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: myorg/myimage:latest
+        # R1010: se publica la imagen sin ningún paso de firma/verificación (cosign) después

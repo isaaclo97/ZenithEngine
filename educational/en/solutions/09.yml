@@ -1,0 +1,29 @@
+# Lesson 09 solution: each condition is a single expression. Without ${{ }} is
+# clearest, because GitHub already evaluates the whole "if:" as an expression.
+name: Staging
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-staging:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to staging
+        run: ./scripts/deploy.sh staging
+
+      - name: Notify the team if something fails
+        if: failure() || cancelled()
+        run: ./scripts/notify.sh
+
+  clear-cache:
+    if: github.event_name == 'push' && vars.CLEAR_CACHE == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clear the staging cache
+        run: ./scripts/clear-cache.sh

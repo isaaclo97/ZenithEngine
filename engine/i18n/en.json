@@ -59,7 +59,7 @@
   "R1018.description": "A call to the GitHub API was detected pointing at the hardcoded repository \"{repo}\". This technique can be used to exfiltrate data to an attacker-controlled external repository, taking advantage of api.github.com being a trusted domain.",
   "R1018.rule": "Possible exfiltration via the GitHub API",
   "R1018.suggestion": "Verify that the GitHub API call is legitimate and necessary. If the target should be the repository itself, use ${{{{ github.repository }}}} instead of a hardcoded value.",
-  "R1019.description": "The variable \"{variable}\" holds a value derived from a secret and is being printed in the pipeline logs. GitHub doesn't mask variables derived from secrets, so the value will appear as plain text in the logs.",
+  "R1019.description": "The variable \"{variable}\" holds a value derived from a secret and is being printed in the pipeline logs. GitHub only masks the exact literal value of a secret: any transformation (base64, substrings, concatenation, a derived variable...) escapes the mask, so the value can end up in plain text in the logs.",
   "R1019.rule": "Secret exposed in pipeline logs",
   "R1019.suggestion": "Remove any command that prints variables derived from secrets. If debugging is needed, use add-mask to mask the value: echo \"::add-mask::${variable}\"",
   "R1020.description": "The job \"{job_name}\" runs on a self-hosted runner with labels suggesting a cloud instance ({cloud_labels}). Without hardening configured, any process in the pipeline can query the instance metadata service to obtain the associated IAM role's credentials and access the entire cloud infrastructure.",

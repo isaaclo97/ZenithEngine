@@ -1,0 +1,40 @@
+# YOUR TURN (lesson 12): several typos that could be typosquatting have slipped
+# into this CI, along with some risky install practices. Find them and fix them
+# without removing any step.
+name: API CI
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actoins/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache dependencies
+        uses: action/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install python-dateutils urlib3
+
+      - name: Install the linter
+        run: wget -qO- https://install.linter.example/latest.sh | sh
+
+      - name: Run the tests
+        run: pytest

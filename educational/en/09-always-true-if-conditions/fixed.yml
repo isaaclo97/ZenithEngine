@@ -1,0 +1,21 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: ['**']
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' && github.actor == 'trusted-bot' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Publish release
+        if: ${{ vars.DEPLOY_ENABLED == 'true' }}
+        run: ./scripts/publish-release.sh

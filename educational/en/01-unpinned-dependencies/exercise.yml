@@ -1,0 +1,36 @@
+# YOUR TURN (lesson 01): this workflow publishes the project's documentation.
+# Make everything it runs immutable, without removing any step.
+name: Publish documentation
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@main
+        with:
+          python-version: '3.12'
+
+      - name: Build the site
+        run: pip install --require-hashes -r requirements-docs.txt && mkdocs build
+
+      - name: Check for broken links
+        uses: lycheeverse/lychee-action@latest
+        with:
+          args: ./site
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site

@@ -1,0 +1,40 @@
+# Lesson 02 solution:
+# - read-only permissions at workflow level, and on the job only what's needed
+#   to label and comment on the PR;
+# - the unknown author's action is replaced by actions/labeler, which does the
+#   same thing and comes from a verified organization. repo-token stays.
+# The trigger stays pull_request_target: with pull_request, the token is
+# read-only on fork PRs and couldn't label or comment. It's safe here because no
+# step downloads or runs the PR's code (lesson 06): actions/labeler reads its
+# configuration and the list of files through the API.
+name: PR triage
+
+on:
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  contents: read
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Label based on changed files
+        uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Welcome the author
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: 'Thanks for your PR! We will review it soon.'
+            })

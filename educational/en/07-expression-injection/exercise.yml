@@ -1,0 +1,26 @@
+# YOUR TURN (lesson 07): a bot answers "/hello" in issue comments. Any GitHub
+# user can write those comments. Keep the comment, the title and the previous
+# step's output reaching the scripts, but so nobody can inject commands.
+name: Hello bot
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  command:
+    if: startsWith(github.event.comment.body, '/hello')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read the command
+        id: command
+        run: |
+          echo "Comment received: ${{ github.event.comment.body }}"
+          echo "title=$(echo '${{ github.event.issue.title }}' | cut -c1-40)" >> "$GITHUB_OUTPUT"
+
+      - name: Log the result
+        run: echo "Processing issue ${{ steps.command.outputs.title }}"

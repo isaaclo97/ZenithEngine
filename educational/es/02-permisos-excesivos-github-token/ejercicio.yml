@@ -1,0 +1,28 @@
+# TU TURNO (lección 02): este workflow etiqueta cada PR nuevo y da la bienvenida.
+# Dale al token solo los permisos que necesita y no se lo entregues a una
+# acción de un autor desconocido. Los parámetros de cada step deben seguir ahí.
+name: Triage de PRs
+
+on:
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Etiquetar según los ficheros cambiados
+        uses: fancy-dev/auto-labeler@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Dar la bienvenida
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '¡Gracias por tu PR! Lo revisaremos pronto.'
+            })

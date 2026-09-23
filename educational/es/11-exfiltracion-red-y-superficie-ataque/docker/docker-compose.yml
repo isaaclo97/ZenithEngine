@@ -1,0 +1,23 @@
+# Sandbox aislado: "collector" hace de servidor del atacante, "sender"
+# ejecuta literalmente el curl de vulnerable.yml apuntando al collector en
+# vez de a un dominio real. La red es "internal: true": los contenedores se
+# ven entre sí pero NO tienen salida a Internet, así que esto nunca podría
+# contactar un host externo aunque quisiera. Ambos procesos terminan solos
+# tras la demo, así que "docker compose up" finaliza sin necesitar Ctrl+C.
+services:
+  collector:
+    build:
+      context: .
+      dockerfile: Dockerfile.collector
+    networks: [exfil-demo]
+
+  sender:
+    build:
+      context: .
+      dockerfile: Dockerfile.sender
+    depends_on: [collector]
+    networks: [exfil-demo]
+
+networks:
+  exfil-demo:
+    internal: true

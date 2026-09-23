@@ -1,0 +1,39 @@
+# Solución lección 01: cada acción fijada por el hash de commit al que apunta
+# su versión, con la versión en un comentario para que siga siendo legible.
+# Los hashes se obtienen con: git ls-remote https://github.com/<owner>/<repo> refs/tags/<tag>
+name: Publicar documentación
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Preparar Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Construir la web
+        run: pip install --require-hashes -r requirements-docs.txt && mkdocs build
+
+      - name: Revisar enlaces rotos
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: ./site
+
+      - name: Publicar en GitHub Pages
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site

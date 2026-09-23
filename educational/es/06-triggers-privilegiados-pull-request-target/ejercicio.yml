@@ -1,0 +1,40 @@
+# TU TURNO (lección 06): los tests de los PRs de forks se ejecutan con los
+# privilegios del repositorio. Consigue que sigan ejecutándose en cada PR,
+# pero sin exponer secretos ni el token con permisos al código del fork.
+name: Tests de PRs
+
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código del PR
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Ejecutar los tests con cobertura
+        run: npm ci && npm test -- --coverage
+
+      - name: Subir la cobertura
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: npx codecov --token "$CODECOV_TOKEN"
+
+  reintentar:
+    runs-on: ubuntu-latest
+    needs: tests
+    if: failure()
+    steps:
+      - name: Volver a lanzar los tests fallidos
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr checkout ${{ github.event.number }} --repo ${{ github.repository }}
+          npm ci && npm test

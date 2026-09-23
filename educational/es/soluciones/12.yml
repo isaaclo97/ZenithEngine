@@ -1,0 +1,48 @@
+# Solución lección 12:
+# - "actoins/setup-python" y "action/cache" eran erratas de actions/setup-python
+#   y actions/cache: se corrigen copiando el nombre del Marketplace y se fijan por hash;
+# - "python-dateutils" y "urlib3" no son python-dateutil ni urllib3: se añaden
+#   los paquetes correctos a requirements.txt (con hashes) en vez de instalarlos sueltos;
+# - pip instala con --require-hashes;
+# - el linter se descarga en una versión concreta y se comprueba su SHA-256 antes
+#   de ejecutarlo (el hash de este ejemplo es ficticio, como el dominio).
+name: CI de la API
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Preparar Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Cachear dependencias
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Instalar dependencias
+        run: pip install --require-hashes -r requirements.txt
+
+      - name: Instalar el linter
+        run: |
+          curl -fsSLo linter.sh https://install.linter.example/v3.2.0/install.sh
+          echo "9c2e4a6b8d0f1e3c5a7b9d1f3e5c7a9b0d2f4e6c8a0b2d4f6e8c0a2b4d6f8e0a  linter.sh" | sha256sum -c -
+          sh linter.sh
+
+      - name: Pasar los tests
+        run: pytest

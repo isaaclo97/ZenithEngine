@@ -1,0 +1,41 @@
+name: PR build and preview
+
+on:
+  pull_request_target:      # R1000: privileged trigger, runs with the base repo's secrets
+    types: [opened, synchronize, labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the PR's own code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}   # R1001: attacker's code enters the privileged environment
+
+      - name: Install dependencies and build preview
+        run: npm ci && npm run build
+        env:
+          DEPLOY_TOKEN: ${{ secrets.PREVIEW_DEPLOY_TOKEN }}  # the PR's code runs with this secret available
+
+  test-approved:
+    # Prior check: a maintainer reviews the PR's diff and, if it looks safe,
+    # adds the "safe-to-test" label so the tests run.
+    if: github.event.action == 'labeled' && github.event.label.name == 'safe-to-test'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4   # base repo checkout, needed for gh to work
+
+      - name: Late checkout by PR number (TOCTOU pattern)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr checkout ${{ github.event.pull_request.number }}
+          # R1021: between the maintainer reviewing and labeling the PR and
+          # this checkout, the author may have pushed a different (malicious)
+          # commit. "gh pr checkout <number>" always fetches the PR's LATEST
+          # commit, not the commit that was actually reviewed.
+          npm test

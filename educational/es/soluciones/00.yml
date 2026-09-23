@@ -1,0 +1,49 @@
+# Solución lección 00:
+# - faltaba "on:": sin evento no se dispara nunca;
+# - faltaba "permissions:": el token heredaría los permisos por defecto del
+#   repositorio; basta con leer el código (contents: read);
+# - el job "tests" no decía en qué máquina correr (runs-on);
+# - actions/checkout no tenía versión: se fija por hash;
+# - un step no puede tener "uses:" y "run:" a la vez: se separa en dos;
+# - el step sin nombre se nombra, para que el log se entienda;
+# - "needs: test" apuntaba a un job que no existe: se llama "tests".
+name: CI básica
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Pasar los tests
+        run: npm test
+
+  informe:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Subir el informe de cobertura
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cobertura
+          path: coverage/

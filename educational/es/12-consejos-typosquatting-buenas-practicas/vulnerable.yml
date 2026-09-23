@@ -1,0 +1,39 @@
+name: Build y publicación
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actons/checkout@v4                     # "actons": falta una "i"
+
+      - name: Preparar Node.js
+        # Parece bien fijada, pero este hash NO es la v4.0.2 de actions/setup-node:
+        # no existe en ese repositorio. Solo se detecta consultando GitHub (--online).
+        uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ecf # v4.0.2
+
+      - name: Preparar Python
+        uses: actions/setup-pyhton@v5                # "pyhton": letras cambiadas de sitio
+
+      - name: Instalar dependencias
+        run: |
+          npm install                                 # ignora el lockfile
+          npm install crossenv                        # el paquete real es "cross-env"
+          pip install reqeusts jeIlyfish              # "requests" y "jellyfish" (con I mayúscula)
+          pip install --extra-index-url https://pypi.empresa.example/simple empresa-utils
+
+      - name: Instalar la herramienta de despliegue
+        run: curl -sSL https://get.herramienta.example/install.sh | bash
+
+      - name: Iniciar sesión en el registro
+        uses: docker/login-actoin@v3                 # "actoin"
+        with:
+          username: ci-bot
+          password: ${{ secrets.DOCKERHUB_TOKEN }}

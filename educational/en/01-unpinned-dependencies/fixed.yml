@@ -1,0 +1,32 @@
+name: Build and changelog
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Detect changed files
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6, later than the fix for the CVE-2025-30066 incident (v46.0.1)
+        id: changed
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Notify Slack
+        uses: some-org/slack-notify@a3f1c9e2b4d6f8091a2c3e5f7091a2c3e5f70912 # v2.3.1, explicitly pinned instead of @latest
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK }}

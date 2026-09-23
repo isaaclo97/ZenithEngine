@@ -1,0 +1,41 @@
+# YOUR TURN (lesson 05): nobody has touched this workflow in months and it no
+# longer starts. Get it running again on runners that exist today, with
+# up-to-date actions.
+name: Cross-platform tests
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-lastest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Run the tests
+        run: pip install -r requirements.txt && pytest
+
+  macos:
+    runs-on: macos-10.15
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Run the tests
+        run: pip3 install -r requirements.txt && pytest

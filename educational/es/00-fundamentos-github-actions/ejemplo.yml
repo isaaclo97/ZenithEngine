@@ -1,0 +1,88 @@
+# Un workflow es un fichero YAML dentro de .github/workflows/ del repositorio.
+# Este ejemplo está comentado línea a línea: léelo junto al README de la lección.
+
+name: CI y publicación          # nombre que aparece en la pestaña "Actions"
+
+# on: qué EVENTOS disparan el workflow. Cada evento lo puede provocar gente
+# distinta, y eso decide cuánto hay que desconfiar de sus datos.
+on:
+  push:                         # alguien con permiso de escritura sube commits
+    branches: [main]
+  pull_request:                 # cualquiera puede abrir un PR desde un fork
+    branches: [main]
+  workflow_dispatch:            # lanzado a mano desde la web (requiere escritura)
+
+# permissions: qué puede hacer el GITHUB_TOKEN, el token temporal que GitHub
+# crea en cada ejecución. Aquí, por defecto, solo leer el código.
+permissions:
+  contents: read
+
+# jobs: bloques de trabajo. Cada job corre en su propia máquina (runner) y,
+# salvo que uno dependa de otro con "needs:", se ejecutan en paralelo.
+jobs:
+  tests:
+    runs-on: ubuntu-latest      # runner hospedado por GitHub: máquina nueva y efímera
+    steps:                      # steps: pasos que se ejecutan en orden dentro del job
+      # Un step "uses:" ejecuta una ACCIÓN: código de otro repositorio
+      # (owner/repo@versión). Es código de terceros que corre en tu pipeline.
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Por defecto, checkout deja el GITHUB_TOKEN guardado en .git/config
+          # para que los steps siguientes puedan hacer git push. Si nadie va a
+          # hacer push, mejor no dejarlo ahí: cualquier step posterior (o un
+          # artefacto que suba esa carpeta) podría leerlo.
+          persist-credentials: false
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:                   # with: parámetros de entrada de la acción
+          node-version: 24
+
+      # Un step "run:" ejecuta comandos de shell escritos aquí mismo.
+      - name: Instalar dependencias y pasar los tests
+        run: |
+          npm ci
+          npm test
+
+      # ${{ ... }} es una EXPRESIÓN: GitHub la sustituye antes de ejecutar el
+      # step. github.event.pull_request.title lo escribe quien abre el PR, así
+      # que se pasa por env: y nunca se pega dentro del script (lección 07).
+      - name: Mostrar el título del PR
+        if: github.event_name == 'pull_request'
+        env:
+          TITULO: ${{ github.event.pull_request.title }}
+        run: |
+          printf 'Probando el PR: %s\n' "$TITULO"
+
+      - name: Guardar el informe de cobertura
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:                   # un ARTEFACTO es un fichero que sobrevive al job
+          name: cobertura
+          path: coverage/
+
+  publicar:
+    needs: tests                # solo empieza si "tests" termina bien
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:                # este job necesita algo más que leer:
+      contents: read
+      id-token: write           # firmar la procedencia del paquete (npm --provenance)
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org   # registry-url crea el .npmrc que usa NODE_AUTH_TOKEN
+
+      # secrets.X: valores cifrados que se configuran en Settings > Secrets.
+      # GitHub no se los da a los workflows lanzados desde forks.
+      - name: Publicar el paquete
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm ci && npm publish --provenance

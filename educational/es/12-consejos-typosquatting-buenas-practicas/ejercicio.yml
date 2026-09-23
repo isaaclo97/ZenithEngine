@@ -1,0 +1,40 @@
+# TU TURNO (lección 12): en este CI se han colado varias erratas que podrían
+# ser typosquatting, y alguna práctica de instalación arriesgada. Encuéntralas
+# y corrígelas sin quitar ningún step.
+name: CI de la API
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Preparar Python
+        uses: actoins/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cachear dependencias
+        uses: action/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Instalar dependencias
+        run: |
+          pip install -r requirements.txt
+          pip install python-dateutils urlib3
+
+      - name: Instalar el linter
+        run: wget -qO- https://install.linter.example/latest.sh | sh
+
+      - name: Pasar los tests
+        run: pytest

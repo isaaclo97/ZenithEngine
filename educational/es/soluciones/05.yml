@@ -1,0 +1,45 @@
+# Solución lección 05: etiquetas de runner que existen (la primera era una
+# errata; macos-10.15 se retiró hace años) y acciones actualizadas a una
+# versión con runtime soportado, fijadas por hash.
+name: Tests multiplataforma
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Preparar Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Cachear dependencias
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Ejecutar los tests
+        run: pip install -r requirements.txt && pytest
+
+  macos:
+    runs-on: macos-14
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Ejecutar los tests
+        run: pip3 install -r requirements.txt && pytest

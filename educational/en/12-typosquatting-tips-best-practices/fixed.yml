@@ -1,0 +1,43 @@
+name: Build and publish
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Names copied from the Marketplace, not typed, and pinned to a hash
+      # checked with: git ls-remote https://github.com/<owner>/<repo> refs/tags/<tag>
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+
+      - name: Install dependencies
+        run: |
+          npm ci --ignore-scripts                     # exactly the lockfile, no postinstall scripts
+          pip install --require-hashes -r requirements.txt
+          pip install --index-url https://pypi.company.example/simple company-utils
+
+      - name: Install the deployment tool
+        run: |
+          curl -fsSLo install.sh https://get.tool.example/v1.8.2/install.sh
+          echo "3f1d5c0b9a7e2d4c6b8a0f1e3d5c7b9a1f2e4d6c8b0a2f4e6d8c0b2a4f6e8d0c  install.sh" | sha256sum -c -
+          bash install.sh
+
+      - name: Log in to the registry
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          username: ci-bot
+          password: ${{ secrets.DOCKERHUB_TOKEN }}

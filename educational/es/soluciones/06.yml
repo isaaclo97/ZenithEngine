@@ -1,0 +1,47 @@
+# Solución lección 06: para ejecutar el código de un PR no hace falta
+# pull_request_target. Con pull_request el workflow recibe el código del PR,
+# un token de solo lectura y ningún secreto: exactamente lo que queremos.
+# - La cobertura se guarda como artefacto (sin CODECOV_TOKEN). Si hay que
+#   enviarla a un servicio con secreto, se hace en un workflow aparte que no
+#   ejecute código del PR (workflow_run leyendo el artefacto como dato).
+# - El reintento usa el mismo checkout, sin "gh pr checkout" por número.
+name: Tests de PRs
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código del PR
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Ejecutar los tests con cobertura
+        run: npm ci && npm test -- --coverage
+
+      - name: Subir la cobertura
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cobertura
+          path: coverage/
+
+  reintentar:
+    runs-on: ubuntu-latest
+    needs: tests
+    if: failure()
+    steps:
+      - name: Descargar el código del PR
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Volver a lanzar los tests fallidos
+        run: npm ci && npm test

@@ -1,0 +1,27 @@
+# TU TURNO (lección 07): un bot responde a "/saludo" en los comentarios de las
+# issues. Cualquier usuario de GitHub puede escribir esos comentarios.
+# Haz que el comentario, el título y la salida del step anterior sigan llegando
+# a los scripts, pero sin que nadie pueda inyectar comandos.
+name: Bot de saludo
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  comando:
+    if: startsWith(github.event.comment.body, '/saludo')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Leer el comando
+        id: comando
+        run: |
+          echo "Comentario recibido: ${{ github.event.comment.body }}"
+          echo "titulo=$(echo '${{ github.event.issue.title }}' | cut -c1-40)" >> "$GITHUB_OUTPUT"
+
+      - name: Registrar el resultado
+        run: echo "Procesando la issue ${{ steps.comando.outputs.titulo }}"

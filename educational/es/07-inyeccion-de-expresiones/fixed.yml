@@ -1,0 +1,21 @@
+name: Greet PR author
+
+on:
+  pull_request:  # sin _target: para saludar no hacen falta secretos ni token con escritura
+    types: [opened]
+
+permissions:
+  contents: read
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Saludar usando el título del PR (de forma segura)
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "Gracias por tu PR: $PR_TITLE"
+          # El título llega como valor de la variable de entorno PR_TITLE,
+          # nunca se interpola en el texto del script: no hay expansión de
+          # comandos posible aunque el título contenga metacaracteres de shell.

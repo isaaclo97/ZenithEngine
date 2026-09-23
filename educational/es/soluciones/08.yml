@@ -1,0 +1,39 @@
+# Solución lección 08:
+# - la contraseña del registro sale de un secreto (y la que estaba escrita en
+#   el fichero hay que ROTARLA: ya quedó en el historial de git);
+# - no se imprime el token ni ningún trozo de él: el prefijo cortado con "cut"
+#   ya no coincide con el secreto y GitHub no lo enmascararía. Solo se comprueba
+#   que existe y cuánto mide.
+name: Desplegar
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Iniciar sesión en el registro
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          username: ci-bot
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Comprobar credenciales de despliegue
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          if [ -z "$DEPLOY_TOKEN" ]; then
+            echo "Falta configurar el secreto DEPLOY_TOKEN"
+            exit 1
+          fi
+          echo "DEPLOY_TOKEN configurado (longitud: ${#DEPLOY_TOKEN})"
+
+      - name: Desplegar
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: ./scripts/deploy.sh --token "$DEPLOY_TOKEN"

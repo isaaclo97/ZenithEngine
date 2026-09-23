@@ -1,0 +1,10 @@
+# Isolated, network-less sandbox demonstrating the real execution of a
+# command injected via GitHub Actions expression expansion.
+# The payload in demo.sh doesn't need Internet access (it uses a harmless
+# local command instead of contacting a real host), so network_mode: none
+# doesn't break the demo and rules out any accidental outbound traffic.
+services:
+  injection-demo:
+    build: .
+    network_mode: none
+    read_only: false

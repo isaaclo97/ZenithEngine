@@ -1,0 +1,41 @@
+# Solución lección 11:
+# - el trigger se limita a los PRs contra main;
+# - runner hospedado por GitHub (efímero) en lugar de una máquina propia en la nube;
+# - las métricas se guardan como artefacto del propio workflow, no en un servicio externo;
+# - la comprobación de red resuelve un dominio conocido, no un subdominio con datos codificados;
+# - la release se crea en ESTE repositorio (github.repository) y el binario va a
+#   un servidor identificado por nombre, no por IP.
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compilar
+        run: make build
+
+      - name: Enviar métricas
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: metricas
+          path: build/metrics.json
+
+      - name: Comprobar conectividad
+        run: nslookup api.github.com
+
+      - name: Publicar el binario
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -X POST -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases" -d '{"tag_name":"nightly"}'
+          scp build/app deploy@despliegue.empresa.example:/srv/app

@@ -1,0 +1,28 @@
+# YOUR TURN (lesson 02): this workflow labels every new PR and welcomes its author.
+# Give the token only the permissions it needs, and don't hand it to an action
+# from an unknown author. Every step's parameters must still be there.
+name: PR triage
+
+on:
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label based on changed files
+        uses: fancy-dev/auto-labeler@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Welcome the author
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: 'Thanks for your PR! We will review it soon.'
+            })

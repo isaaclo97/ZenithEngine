@@ -1,0 +1,35 @@
+name: Auto label and comment
+
+# pull_request_target hace falta para etiquetar y comentar PRs de forks (con
+# pull_request el token sería de solo lectura). Es seguro aquí porque ningún
+# step descarga ni ejecuta código del PR: todo va por la API de GitHub.
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write   # único permiso adicional que necesita este job, y nada más
+    steps:
+      - name: Etiquetar automáticamente según ficheros modificados
+        uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0, mantenida por la organización verificada actions
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comentar en el PR
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0, mantenida por la organización verificada actions
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '¡Gracias por tu contribución!'
+            })

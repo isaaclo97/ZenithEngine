@@ -1,0 +1,32 @@
+# Solución lección 07: todas las expresiones pasan por env:, así llegan a la
+# shell como valores de variables y no como texto del script. También la salida
+# de un step anterior: su contenido venía del título de la issue.
+# El "if:" del job no hace falta cambiarlo: se evalúa como expresión, no en bash.
+name: Bot de saludo
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  comando:
+    if: startsWith(github.event.comment.body, '/saludo')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Leer el comando
+        id: comando
+        env:
+          COMENTARIO: ${{ github.event.comment.body }}
+          TITULO: ${{ github.event.issue.title }}
+        run: |
+          printf 'Comentario recibido: %s\n' "$COMENTARIO"
+          printf 'titulo=%s\n' "$(printf '%s' "$TITULO" | head -n1 | cut -c1-40)" >> "$GITHUB_OUTPUT"
+
+      - name: Registrar el resultado
+        env:
+          TITULO_CORTO: ${{ steps.comando.outputs.titulo }}
+        run: printf 'Procesando la issue %s\n' "$TITULO_CORTO"

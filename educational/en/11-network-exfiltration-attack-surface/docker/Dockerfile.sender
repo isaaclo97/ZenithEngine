@@ -1,0 +1,8 @@
+FROM alpine:3.20
+
+RUN apk add --no-cache curl
+
+COPY send.sh /send.sh
+RUN chmod +x /send.sh
+
+CMD ["/send.sh"]

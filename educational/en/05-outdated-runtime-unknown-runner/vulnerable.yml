@@ -1,0 +1,26 @@
+name: Legacy CI
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: bunutu-latest         # R1024: typo, not a valid runner label
+    steps:
+      - uses: actions/checkout@v2  # R1023: Node.js 12 runtime, outdated
+      - uses: actions/setup-node@v2 # R1023: Node.js 12 runtime, outdated
+        with:
+          node-version: '18'
+      - run: npm ci && npm test
+
+  package:
+    runs-on: ubuntu-18.04           # R1024: retired image, no longer among the hosted runners
+    steps:
+      - uses: actions/upload-artifact@v2 # R1023: Node.js 12 runtime, outdated
+        with:
+          name: dist
+          path: dist/

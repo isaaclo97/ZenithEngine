@@ -1,0 +1,47 @@
+# Lesson 06 solution: running a PR's code doesn't need pull_request_target.
+# With pull_request the workflow gets the PR's code, a read-only token and no
+# secrets: exactly what we want.
+# - Coverage is stored as an artifact (no CODECOV_TOKEN). If it has to be sent
+#   to a service with a secret, do it in a separate workflow that doesn't run
+#   PR code (workflow_run reading the artifact as data).
+# - The retry uses the same checkout, with no "gh pr checkout" by number.
+name: PR tests
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the PR code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run the tests with coverage
+        run: npm ci && npm test -- --coverage
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage
+          path: coverage/
+
+  retry:
+    runs-on: ubuntu-latest
+    needs: tests
+    if: failure()
+    steps:
+      - name: Check out the PR code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Re-run the failed tests
+        run: npm ci && npm test

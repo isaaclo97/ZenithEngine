@@ -1,0 +1,7 @@
+# Copias de trabajo de los ejercicios / exercise working copies
+mi_solucion.yml
+my_solution.yml
+
+__pycache__/
+.venv/
+.DS_Store

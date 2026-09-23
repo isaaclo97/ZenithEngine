@@ -1,0 +1,49 @@
+name: Build and report
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main, develop]   # restringido: ya no se dispara para PRs contra cualquier rama
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # para subir el informe a la release; en PRs de forks el token sigue siendo de solo lectura
+    steps:
+      - uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            metrics.internal.example.com:443
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Reportar métricas de build a un endpoint interno conocido
+        run: |
+          curl -X POST https://metrics.internal.example.com/api/build-report \
+            -d "status=ok"
+          echo '{"status":"ok"}' > report.json
+
+      - name: Publicar el reporte en el propio repositorio
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload nightly report.json --clobber --repo "${{ github.repository }}"
+
+  integration-tests:
+    runs-on: ubuntu-latest   # runner hospedado por GitHub: efímero, sin necesidad de hardening manual
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: ./run-integration-tests.sh

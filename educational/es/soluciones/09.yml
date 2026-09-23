@@ -1,0 +1,29 @@
+# Solución lección 09: cada condición es una única expresión. Sin ${{ }} es
+# lo más claro, porque GitHub ya evalúa todo el "if:" como expresión.
+name: Staging
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  desplegar-staging:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar en staging
+        run: ./scripts/deploy.sh staging
+
+      - name: Avisar al equipo si algo falla
+        if: failure() || cancelled()
+        run: ./scripts/avisar.sh
+
+  limpiar-cache:
+    if: github.event_name == 'push' && vars.LIMPIAR_CACHE == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Limpiar la caché de staging
+        run: ./scripts/limpiar-cache.sh

@@ -1,0 +1,23 @@
+name: Auto label and comment
+
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    # R1003: no "permissions" block -> inherits the repo's default permissions (often read/write)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auto-label based on changed files
+        uses: some-org/pr-labeler-action@v1     # unverified organization
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}   # R1011: third-party action with access to the token, with no explicit permissions to constrain it
+
+      - name: Comment on the PR
+        uses: some-org/pr-commenter-action@v2   # unverified organization
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}  # R1011
+          message: "Thanks for your contribution!"

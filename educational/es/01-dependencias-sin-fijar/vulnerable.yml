@@ -1,0 +1,30 @@
+name: Build and changelog
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4                          # R1002: tag mutable, no hash
+
+      - name: Detectar ficheros modificados
+        uses: tj-actions/changed-files@v35                  # R1012: rama/tag mutable con historial de compromiso real (CVE-2025-30066)
+        id: changed
+
+      - name: Setup Node
+        uses: actions/setup-node@main                       # R1012: rama usada como versión
+
+      - name: Instalar dependencias y build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Notificar en Slack
+        uses: some-org/slack-notify@latest                  # R1017: @latest, el caso más peligroso
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK }}

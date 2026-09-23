@@ -1,0 +1,26 @@
+# TU TURNO (lección 00): este workflow tiene errores de estructura y GitHub no
+# llegaría ni a ejecutarlo. Arréglalo usando ejemplo.yml como referencia.
+# Ningún step con nombre puede desaparecer.
+name: CI básica
+
+jobs:
+  tests:
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout
+
+      - name: Instalar dependencias
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        run: npm ci
+
+      - run: npm test
+
+  informe:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Subir el informe de cobertura
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cobertura
+          path: coverage/
