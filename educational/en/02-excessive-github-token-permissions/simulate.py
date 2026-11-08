@@ -40,15 +40,23 @@ def print_alert(alert):
     print(f"  [{alert['severity']:8s}] {alert['rule_id']}  line {alert['line']}: {alert['description']}")
 
 
+def expand(perms):
+    """`write-all` / `read-all` -> the same level on every scope; `{}` -> none."""
+    if isinstance(perms, str):
+        level = {'write-all': 'write', 'read-all': 'read'}.get(perms.strip().lower(), 'none')
+        return {scope: level for scope in DEFAULT_PERMISSIVE_TOKEN}
+    return perms or {}
+
+
 def effective_permissions(workflow):
     global_perms = workflow.get('permissions')
     table = {}
     for job_name, job in workflow.get('jobs', {}).items():
         job_perms = job.get('permissions')
         if job_perms is not None:
-            table[job_name] = ('declared on the job', job_perms)
+            table[job_name] = ('declared on the job', expand(job_perms))
         elif global_perms is not None:
-            table[job_name] = ('inherited from the workflow', global_perms)
+            table[job_name] = ('inherited from the workflow', expand(global_perms))
         else:
             table[job_name] = ("REPOSITORY DEFAULT (no permissions: at any level)",
                                 DEFAULT_PERMISSIVE_TOKEN)

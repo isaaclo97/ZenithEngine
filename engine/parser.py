@@ -38,11 +38,23 @@ def parse_workflow(file_path):
     return content, lines
 
 
-def find_line(lines, text):
-    """Return the 1-indexed line number of the first line containing `text`,
-    or 0 if not found. Naive substring search: precise for unique tokens
-    (a full `uses:` reference), approximate for common ones (a bare word)."""
-    for i, line in enumerate(lines):
-        if text in line:
+def find_line(lines, text, after=0):
+    """Return the 1-indexed line number of the first line containing `text`
+    after line `after`, or 0 if not found. Naive substring search: precise for
+    unique tokens (a full `uses:` reference), approximate for common ones (a
+    bare word)."""
+    for i in range(after, len(lines)):
+        if text in lines[i]:
             return i + 1
     return 0
+
+
+def find_position(lines, text, line=0, col=0):
+    """(0-indexed line, column just past the match) of the first occurrence of
+    `text` at or after (line, col), or None. Lets a caller walk repeated
+    occurrences of the same text one by one."""
+    for i in range(line, len(lines)):
+        j = lines[i].find(text, col if i == line else 0)
+        if j != -1:
+            return i, j + len(text)
+    return None

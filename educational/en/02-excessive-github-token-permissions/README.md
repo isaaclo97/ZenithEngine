@@ -2,7 +2,7 @@
 
 **CWE:** CWE-250 (Execution with Unnecessary Privileges) / CWE-732 (Incorrect Permission Assignment)
 **OWASP CI/CD category:** CICD-SEC-5 (Insufficient PBAC: Pipeline-Based Access Controls)
-**Zenith Engine rules:** `R1003` (missing `permissions` block), `R1011` (third-party action with access to `GITHUB_TOKEN`)
+**Zenith Engine rules:** `R1003` (missing `permissions` block), `R1011` (third-party action in a job whose `GITHUB_TOKEN` can write)
 **Observed real-world frequency:** 2,183 alerts (10% of the total), the third most common weakness.
 
 ## What it is
@@ -11,7 +11,7 @@ Every workflow run automatically receives a short-lived `GITHUB_TOKEN`. If the w
 
 `R1003` flags this: no `permissions:` defined = maximum attack surface by default.
 
-`R1011` is more specific: if an **unverified third-party action** has access to that token (either because it receives it explicitly in a `with:`/`env:`, or because it inherits the job's permissions), and that action gets compromised (see lesson [`01`](../01-unpinned-dependencies/) on `tj-actions/changed-files`), the attacker can use the token for whatever it's allowed to do: publish fake releases, delete branches, modify the repository's code, write to Packages...
+`R1011` is more specific: it fires when an **unverified third-party action** runs in a job whose declared permissions include write access (`write-all` or some `: write`). Whether the workflow passes it the token in a `with:`/`env:` makes no difference: any action can declare an input with `default: ${{ github.token }}` and gets the token anyway (many do, such as `actions/checkout` or `graalvm/setup-graalvm`). So removing `github-token: ${{ secrets.GITHUB_TOKEN }}` protects nothing, and sometimes the action needs it to avoid API rate limits. If that action gets compromised (see lesson [`01`](../01-unpinned-dependencies/) on `tj-actions/changed-files`), the attacker can use the token for whatever it's allowed to do: publish fake releases, delete branches, modify the repository's code, write to Packages...
 
 ## Why it matters
 
@@ -34,7 +34,7 @@ The principle is simple: **the blast radius of a compromised `GITHUB_TOKEN` is e
          contents: write   # only this job needs write access
    ```
 2. If the repository needs broad permissions *in some* job, don't set them globally; declare them only on that job (least-privilege permissions per job, not per workflow).
-3. Before giving a third-party action access to the token (`with: token: ${{ secrets.GITHUB_TOKEN }}` or similar), check that the organization is verified (see `engine/verified_organizations.txt`) and that the permission you're granting is the bare minimum required.
+3. Before using a third-party action, check that the organization is verified (see `engine/verified_organizations.txt`) and that the job it runs in has the minimum permissions. Passing it `secrets.GITHUB_TOKEN` or not changes nothing: the action receives the token either way. If a step needs write access and the action is not trusted, split them into separate jobs.
 4. Enable the organization setting **"Workflow permissions" → "Read repository contents permission"** on GitHub, which changes the whole repository's default permission to read-only unless a workflow explicitly asks for more.
 
 5. **Don't leave the token on disk if you don't need it.** `actions/checkout` stores the `GITHUB_TOKEN` in `.git/config` by default; with `persist-credentials: false` it doesn't. Minimal permissions limit what the token can do; this limits who gets to see it.

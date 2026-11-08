@@ -34,42 +34,72 @@ def load_verified_organizations():
         return [line.strip() for line in f if line.strip()]
 
 
+def _effective_permissions(workflow, job):
+    """The `permissions` that apply to a job: its own block replaces the
+    workflow's entirely. None when neither level declares one."""
+    if isinstance(job, dict) and 'permissions' in job:
+        return job['permissions']
+    return workflow.get('permissions', None)
+
+
+def _grants_write(permissions):
+    """True if the block explicitly gives GITHUB_TOKEN any write scope
+    (`write-all` or some `<scope>: write`)."""
+    if isinstance(permissions, str):
+        return permissions.strip().lower() == 'write-all'
+    if isinstance(permissions, dict):
+        return any(str(v).strip().lower() == 'write' for v in permissions.values())
+    return False
+
+
 def check_third_party_action_with_token_1011(workflow, lines, lang='es'):
+    """A third-party action runs in a job whose GITHUB_TOKEN can write.
+
+    Every action receives the token whether or not the workflow passes it:
+    an input can default to `${{ github.token }}` (setup-graalvm, checkout and
+    many others do). Passing `secrets.GITHUB_TOKEN` explicitly therefore adds
+    no exposure, and omitting it removes none; what limits the damage of a
+    compromised action is the token's scope. Jobs without any `permissions`
+    block are left to R1003; read-only jobs are not reported.
+    """
     alerts = []
     organizations = load_verified_organizations()
 
     jobs = workflow.get('jobs', {})
+    if not isinstance(jobs, dict):
+        return alerts
     for job_name, job in jobs.items():
-        steps = job.get('steps', [])
+        if not isinstance(job, dict):
+            continue
+        if not _grants_write(_effective_permissions(workflow, job)):
+            continue
+
+        job_line = find_line(lines, f'{job_name}:')
+        steps = job.get('steps', []) or []
+        cursor = job_line
         for step in steps:
-            uses = step.get('uses', '')
-            if not uses or uses.startswith('./'):
+            if not isinstance(step, dict):
                 continue
-            if '/' not in uses:
+            uses = step.get('uses', '')
+            if not isinstance(uses, str) or not uses or uses.startswith('./'):
+                continue
+            if uses.startswith('docker://') or '/' not in uses:
                 continue
 
             organization = uses.split('/')[0]
             if organization in organizations:
                 continue
 
-            env = step.get('env', {})
-            with_params = step.get('with', {})
-
-            has_token = any(
-                'GITHUB_TOKEN' in str(v) or
-                'secrets.GITHUB_TOKEN' in str(v)
-                for v in list(env.values()) + list(with_params.values())
-            )
-
-            if has_token:
-                line = find_line(lines, uses)
-                alerts.append(create_alert(
-                    rule_id='R1011',
-                    category='CICD-SEC-8',
-                    severity='HIGH',
-                    line=line,
-                    lang=lang,
-                    uses=uses,
-                ))
+            line = find_line(lines, uses, after=cursor) or find_line(lines, uses)
+            cursor = max(cursor, line)
+            alerts.append(create_alert(
+                rule_id='R1011',
+                category='CICD-SEC-8',
+                severity='HIGH',
+                line=line,
+                lang=lang,
+                uses=uses,
+                job_name=job_name,
+            ))
 
     return alerts

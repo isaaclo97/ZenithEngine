@@ -12,7 +12,7 @@ PUBLISH_ACTIONS = [
 def job_has_cosign(steps):
     for step in steps:
         uses = step.get('uses', '')
-        run = step.get('run', '')
+        run = step.get('run') if isinstance(step.get('run'), str) else ''
         if 'cosign' in uses or 'cosign' in run:
             return True
     return False
@@ -26,7 +26,7 @@ def check_missing_artifact_verification_1010(workflow, lines, lang='es'):
 
         for step in steps:
             uses = step.get('uses', '')
-            run = step.get('run', '')
+            run = step.get('run') if isinstance(step.get('run'), str) else ''
 
             publishes_artifact = any(
                 action in uses for action in PUBLISH_ACTIONS

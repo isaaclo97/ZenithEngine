@@ -1,5 +1,6 @@
 import re
 from engine.create_alert import create_alert
+from engine.expressions import references_context
 from engine.parser import find_line
 
 SENSITIVE_KEYS = [
@@ -82,9 +83,9 @@ def check_hardcoded_credential_1014(workflow, lines, lang='es'):
     return alerts
 
 
-EXTRACTION_PATTERN = re.compile(
-    r'(\w+)\s*=\s*\$\(.*\$\{?\{?\s*secrets\.'
-)
+# A line like "NAME=$(... ${{ secrets.X }} ...)"; the secret itself is checked
+# with references_context, so any notation of the expression counts.
+EXTRACTION_PATTERN = re.compile(r'(\w+)\s*=\s*\$\(')
 
 PRINT_COMMANDS = [
     'echo ',
@@ -101,20 +102,20 @@ def check_secret_in_logs_1019(workflow, lines, lang='es'):
     for job_name, job in jobs.items():
         steps = job.get('steps', [])
         for step in steps:
-            run = step.get('run', '')
+            run = step.get('run') if isinstance(step.get('run'), str) else ''
             env = step.get('env', {})
             if not run:
                 continue
 
             secret_variables = set()
             for var_name, value in env.items():
-                if isinstance(value, str) and 'secrets.' in value:
+                if isinstance(value, str) and references_context(value, 'secrets'):
                     secret_variables.add(var_name)
 
             derived_variables = set()
             for run_line in run.splitlines():
                 match = EXTRACTION_PATTERN.search(run_line)
-                if match:
+                if match and references_context(run_line[match.end():], 'secrets'):
                     derived_variables.add(match.group(1))
                 for var in secret_variables:
                     if var in run_line and '=' in run_line:

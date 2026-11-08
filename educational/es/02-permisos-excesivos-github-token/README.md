@@ -2,7 +2,7 @@
 
 **CWE:** CWE-250 (Execution with Unnecessary Privileges) / CWE-732 (Incorrect Permission Assignment)
 **Categoría OWASP CI/CD:** CICD-SEC-5 (Insufficient PBAC: Pipeline-Based Access Controls)
-**Reglas Zenith Engine:** `R1003` (sin bloque `permissions`), `R1011` (acción de tercero con acceso al `GITHUB_TOKEN`)
+**Reglas Zenith Engine:** `R1003` (sin bloque `permissions`), `R1011` (acción de tercero en un job cuyo `GITHUB_TOKEN` puede escribir)
 **Frecuencia real observada:** 2.183 alertas (10% del total), la tercera debilidad más común.
 
 ## Qué es
@@ -11,7 +11,7 @@ Cada ejecución de un workflow recibe automáticamente un `GITHUB_TOKEN` de cort
 
 `R1003` avisa de esto: ningún `permissions:` definido = superficie de ataque máxima por defecto.
 
-`R1011` es más específico: si una **acción de terceros no verificada** tiene acceso a ese token (bien porque lo recibe explícitamente en un `with:`/`env:`, bien porque hereda los permisos del job), y esa acción se ve comprometida (ver lección [`01`](../01-dependencias-sin-fijar/) sobre `tj-actions/changed-files`), el atacante puede usar el token para lo que sea que el token pueda hacer: publicar releases falsos, borrar ramas, modificar el código del repositorio, escribir en Packages...
+`R1011` es más específico: avisa cuando una **acción de terceros no verificada** se ejecuta en un job cuyos permisos declarados incluyen escritura (`write-all` o algún `: write`). Da igual que el workflow le pase el token en un `with:`/`env:` o no: cualquier acción puede declarar una entrada con `default: ${{ github.token }}` y lo recibe igualmente (muchas lo hacen, como `actions/checkout` o `graalvm/setup-graalvm`). Por eso quitar `github-token: ${{ secrets.GITHUB_TOKEN }}` no protege de nada, y a veces la acción lo necesita para no chocar con los límites de la API. Si esa acción se ve comprometida (ver lección [`01`](../01-dependencias-sin-fijar/) sobre `tj-actions/changed-files`), el atacante puede usar el token para lo que sea que el token pueda hacer: publicar releases falsos, borrar ramas, modificar el código del repositorio, escribir en Packages...
 
 ## Por qué importa
 
@@ -34,7 +34,7 @@ El principio es simple: **el radio de explosión de un `GITHUB_TOKEN` comprometi
          contents: write   # solo este job necesita escribir
    ```
 2. Si el repositorio necesita permisos amplios *en algún* job, no los pongas a nivel global; decláralos únicamente en ese job (permisos "de mínimos" por job, no por workflow).
-3. Antes de dar acceso al token a una acción de terceros (`with: token: ${{ secrets.GITHUB_TOKEN }}` o similar), comprueba que la organización está verificada (ver `engine/verified_organizations.txt`) y que el permiso que le das es el mínimo indispensable.
+3. Antes de usar una acción de terceros, comprueba que la organización está verificada (ver `engine/verified_organizations.txt`) y que el job en el que corre tiene los permisos mínimos. Pasarle o no `secrets.GITHUB_TOKEN` no cambia nada: la acción recibe el token de todos modos. Si un paso necesita escribir y la acción no es de confianza, sepáralos en jobs distintos.
 4. Activa el ajuste de organización **"Workflow permissions" → "Read repository contents permission"** en GitHub, que cambia el permiso por defecto de todo el repositorio a solo lectura salvo que un workflow pida explícitamente más.
 
 5. **No dejes el token en disco si no hace falta.** `actions/checkout` guarda el `GITHUB_TOKEN` en `.git/config` por defecto; con `persist-credentials: false` no lo hace. Unos permisos mínimos limitan lo que puede hacer el token; esto limita quién llega a verlo.

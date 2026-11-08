@@ -58,7 +58,7 @@ def check_fraudulent_domain_1005(workflow, lines, lang='es'):
     for job_name, job in jobs.items():
         steps = job.get('steps', [])
         for step in steps:
-            run = step.get('run', '')
+            run = step.get('run') if isinstance(step.get('run'), str) else ''
             if not run:
                 continue
 
@@ -111,7 +111,7 @@ def check_direct_ip_call_1009(workflow, lines, lang='es'):
     for job_name, job in jobs.items():
         steps = job.get('steps', [])
         for step in steps:
-            run = step.get('run', '')
+            run = step.get('run') if isinstance(step.get('run'), str) else ''
             if not run:
                 continue
 
@@ -140,7 +140,7 @@ def check_dns_exfiltration_1015(workflow, lines, lang='es'):
     for job_name, job in jobs.items():
         steps = job.get('steps', [])
         for step in steps:
-            run = step.get('run', '')
+            run = step.get('run') if isinstance(step.get('run'), str) else ''
             if not run:
                 continue
 
@@ -179,7 +179,7 @@ def check_github_api_exfiltration_1018(workflow, lines, lang='es'):
     for job_name, job in jobs.items():
         steps = job.get('steps', [])
         for step in steps:
-            run = step.get('run', '')
+            run = step.get('run') if isinstance(step.get('run'), str) else ''
             if not run:
                 continue
 

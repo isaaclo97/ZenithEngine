@@ -70,7 +70,7 @@ To compare Zenith Engine against other workflow scanners (actionlint, poutine, z
 | R1008 | Action not found in the Marketplace | AIW – Artifact Integrity Weakness | CWE-353 / CWE-494 |
 | R1009 | Outbound call to a raw IP address | *(outside the taxonomy — Zenith-specific)* | — |
 | R1010 | No artifact integrity verification | AIW – Artifact Integrity Weakness | CWE-353 / CWE-494 |
-| R1011 | Third-party action with access to `GITHUB_TOKEN` | EPW – Excessive Permission Weakness | CWE-250 / CWE-732 |
+| R1011 | Third-party action in a job with a write-scoped `GITHUB_TOKEN` | EPW – Excessive Permission Weakness | CWE-250 / CWE-732 |
 | R1012 | A branch is used as the action version | UDW – Unpinned Dependency Weakness | CWE-829 |
 | R1013 | `pull_request` trigger without branch restrictions | *(outside the taxonomy — Zenith-specific)* | — |
 | R1014 | Hardcoded credential or token | SEW – Secrets Exposure Weakness | CWE-200 / CWE-522 |
